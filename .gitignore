@@ -1,0 +1,12 @@
+node_modules/
+dist/
+data/*.db
+data/*.db-journal
+data/*.db-wal
+data/*.db-shm
+.env
+*.log
+
+# Rechnerlokale Claude-Code-Berechtigungen (enthaelt PIDs, Ports, lokale Pfade).
+# .claude/launch.json bleibt versioniert -- das ist Projektkonfiguration.
+.claude/settings.local.json

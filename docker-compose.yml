@@ -1,0 +1,21 @@
+services:
+  app:
+    build: .
+    restart: unless-stopped
+    # Nur lokal gebunden: TLS und Subdomain macht der Reverse Proxy davor,
+    # der API-Key soll nie an einem offenen Port haengen (spec Q8).
+    ports:
+      - "127.0.0.1:3000:3000"
+    env_file:
+      - .env
+    environment:
+      NODE_ENV: production
+      PORT: "3000"
+      # Muss auf das Volume zeigen, NICHT nach /app/data -- dort liegen die
+      # statischen Datensaetze aus dem Image (siehe Dockerfile).
+      DATABASE_PATH: /app/var/app.db
+    volumes:
+      - leaddata:/app/var
+
+volumes:
+  leaddata:

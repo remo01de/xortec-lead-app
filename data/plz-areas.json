@@ -1,0 +1,274 @@
+{
+  "hinweis": "Abarbeitungsreihenfolge des Nacht-Cron. Sortiert nach Anzahl PLZ im Zielgebiet (grober Stadt-vor-Land-Proxy, keine echte Betriebsdichte). Reihenfolge darf nach Marktkenntnis umsortiert werden -- der Cron arbeitet das Array von oben nach unten ab.",
+  "quelle": "GeoNames DE.zip (CC BY 4.0), siehe data/plz-centroids.SOURCE.md",
+  "gebiete": [
+    {
+      "areaCode": "31",
+      "hauptort": "Hildesheim",
+      "bundeslaender": [
+        "Niedersachsen",
+        "Nordrhein-Westfalen"
+      ],
+      "plzImZielgebiet": 147,
+      "anteilImZielgebiet": 0.99
+    },
+    {
+      "areaCode": "38",
+      "hauptort": "Braunschweig",
+      "bundeslaender": [
+        "Niedersachsen"
+      ],
+      "plzImZielgebiet": 147,
+      "anteilImZielgebiet": 0.88
+    },
+    {
+      "areaCode": "21",
+      "hauptort": "Hamburg",
+      "bundeslaender": [
+        "Hamburg",
+        "Niedersachsen"
+      ],
+      "plzImZielgebiet": 133,
+      "anteilImZielgebiet": 0.9
+    },
+    {
+      "areaCode": "22",
+      "hauptort": "Hamburg",
+      "bundeslaender": [
+        "Hamburg"
+      ],
+      "plzImZielgebiet": 130,
+      "anteilImZielgebiet": 0.77
+    },
+    {
+      "areaCode": "50",
+      "hauptort": "Köln",
+      "bundeslaender": [
+        "Nordrhein-Westfalen"
+      ],
+      "plzImZielgebiet": 126,
+      "anteilImZielgebiet": 0.99
+    },
+    {
+      "areaCode": "26",
+      "hauptort": "Oldenburg",
+      "bundeslaender": [
+        "Niedersachsen"
+      ],
+      "plzImZielgebiet": 121,
+      "anteilImZielgebiet": 0.98
+    },
+    {
+      "areaCode": "45",
+      "hauptort": "Essen",
+      "bundeslaender": [
+        "Nordrhein-Westfalen"
+      ],
+      "plzImZielgebiet": 119,
+      "anteilImZielgebiet": 1
+    },
+    {
+      "areaCode": "49",
+      "hauptort": "Osnabrück",
+      "bundeslaender": [
+        "Niedersachsen",
+        "Nordrhein-Westfalen"
+      ],
+      "plzImZielgebiet": 119,
+      "anteilImZielgebiet": 1
+    },
+    {
+      "areaCode": "29",
+      "hauptort": "Celle",
+      "bundeslaender": [
+        "Niedersachsen"
+      ],
+      "plzImZielgebiet": 113,
+      "anteilImZielgebiet": 0.97
+    },
+    {
+      "areaCode": "44",
+      "hauptort": "Dortmund",
+      "bundeslaender": [
+        "Nordrhein-Westfalen"
+      ],
+      "plzImZielgebiet": 107,
+      "anteilImZielgebiet": 1
+    },
+    {
+      "areaCode": "53",
+      "hauptort": "Bonn",
+      "bundeslaender": [
+        "Nordrhein-Westfalen"
+      ],
+      "plzImZielgebiet": 101,
+      "anteilImZielgebiet": 0.77
+    },
+    {
+      "areaCode": "48",
+      "hauptort": "Münster",
+      "bundeslaender": [
+        "Niedersachsen",
+        "Nordrhein-Westfalen"
+      ],
+      "plzImZielgebiet": 99,
+      "anteilImZielgebiet": 1
+    },
+    {
+      "areaCode": "30",
+      "hauptort": "Hannover",
+      "bundeslaender": [
+        "Niedersachsen"
+      ],
+      "plzImZielgebiet": 93,
+      "anteilImZielgebiet": 1
+    },
+    {
+      "areaCode": "33",
+      "hauptort": "Bielefeld",
+      "bundeslaender": [
+        "Nordrhein-Westfalen"
+      ],
+      "plzImZielgebiet": 92,
+      "anteilImZielgebiet": 1
+    },
+    {
+      "areaCode": "40",
+      "hauptort": "Düsseldorf",
+      "bundeslaender": [
+        "Nordrhein-Westfalen"
+      ],
+      "plzImZielgebiet": 90,
+      "anteilImZielgebiet": 1
+    },
+    {
+      "areaCode": "27",
+      "hauptort": "Bremerhaven",
+      "bundeslaender": [
+        "Bremen",
+        "Niedersachsen"
+      ],
+      "plzImZielgebiet": 88,
+      "anteilImZielgebiet": 0.99
+    },
+    {
+      "areaCode": "47",
+      "hauptort": "Duisburg",
+      "bundeslaender": [
+        "Nordrhein-Westfalen"
+      ],
+      "plzImZielgebiet": 87,
+      "anteilImZielgebiet": 0.99
+    },
+    {
+      "areaCode": "59",
+      "hauptort": "Hamm",
+      "bundeslaender": [
+        "Nordrhein-Westfalen"
+      ],
+      "plzImZielgebiet": 85,
+      "anteilImZielgebiet": 1
+    },
+    {
+      "areaCode": "28",
+      "hauptort": "Bremen",
+      "bundeslaender": [
+        "Bremen",
+        "Niedersachsen"
+      ],
+      "plzImZielgebiet": 79,
+      "anteilImZielgebiet": 1
+    },
+    {
+      "areaCode": "42",
+      "hauptort": "Wuppertal",
+      "bundeslaender": [
+        "Nordrhein-Westfalen"
+      ],
+      "plzImZielgebiet": 79,
+      "anteilImZielgebiet": 1
+    },
+    {
+      "areaCode": "20",
+      "hauptort": "Hamburg",
+      "bundeslaender": [
+        "Hamburg"
+      ],
+      "plzImZielgebiet": 76,
+      "anteilImZielgebiet": 0.99
+    },
+    {
+      "areaCode": "51",
+      "hauptort": "Köln",
+      "bundeslaender": [
+        "Nordrhein-Westfalen"
+      ],
+      "plzImZielgebiet": 74,
+      "anteilImZielgebiet": 0.99
+    },
+    {
+      "areaCode": "37",
+      "hauptort": "Göttingen",
+      "bundeslaender": [
+        "Niedersachsen",
+        "Nordrhein-Westfalen"
+      ],
+      "plzImZielgebiet": 70,
+      "anteilImZielgebiet": 0.71
+    },
+    {
+      "areaCode": "52",
+      "hauptort": "Aachen",
+      "bundeslaender": [
+        "Nordrhein-Westfalen"
+      ],
+      "plzImZielgebiet": 69,
+      "anteilImZielgebiet": 1
+    },
+    {
+      "areaCode": "58",
+      "hauptort": "Hagen",
+      "bundeslaender": [
+        "Nordrhein-Westfalen"
+      ],
+      "plzImZielgebiet": 69,
+      "anteilImZielgebiet": 1
+    },
+    {
+      "areaCode": "32",
+      "hauptort": "Minden",
+      "bundeslaender": [
+        "Nordrhein-Westfalen"
+      ],
+      "plzImZielgebiet": 66,
+      "anteilImZielgebiet": 1
+    },
+    {
+      "areaCode": "41",
+      "hauptort": "Mönchengladbach",
+      "bundeslaender": [
+        "Nordrhein-Westfalen"
+      ],
+      "plzImZielgebiet": 60,
+      "anteilImZielgebiet": 1
+    },
+    {
+      "areaCode": "46",
+      "hauptort": "Oberhausen",
+      "bundeslaender": [
+        "Nordrhein-Westfalen"
+      ],
+      "plzImZielgebiet": 49,
+      "anteilImZielgebiet": 1
+    },
+    {
+      "areaCode": "57",
+      "hauptort": "Siegen",
+      "bundeslaender": [
+        "Nordrhein-Westfalen"
+      ],
+      "plzImZielgebiet": 29,
+      "anteilImZielgebiet": 0.44
+    }
+  ]
+}

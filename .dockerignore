@@ -1,0 +1,14 @@
+node_modules
+dist
+.git
+.claude
+.env
+*.log
+
+# Laufzeitdaten gehoeren ins Volume, nicht ins Image.
+data/*.db
+data/*.db-shm
+data/*.db-wal
+
+# Die statischen Datensaetze (plz-centroids.csv, plz-areas.json,
+# plz-area-places.json) bleiben bewusst drin -- die App liest sie zur Laufzeit.
