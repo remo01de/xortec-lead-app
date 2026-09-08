@@ -73,7 +73,11 @@ misattributes. Worth a name-similarity check against existing rows before insert
 
 ## Required reading before implementing
 
-Both files are in German and are binding, not background material:
+`README.md` is the human-facing counterpart to this file: what the app does, setup, dev workflow,
+deployment, running costs. Keep operational instructions there and agent guidance here — don't
+duplicate the tuning history or the "Pick up here" section into the README.
+
+Both files below are in German and are binding, not background material:
 
 - **`docs/spezifikation.md`** — the binding result of a "Grill-Me" requirements interview
   (2026-09-07). Read it in full before implementing anything; the summary below is a navigation
