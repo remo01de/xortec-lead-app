@@ -13,6 +13,12 @@ code-complete**: login, nightly cron, and the Docker setup are all built and ver
 is the deployment itself on the user's IONOS server (his own access, and he has done it before) —
 plus the two follow-ups under Known open risks.
 
+**Git state (2026-09-08)**: the repo has history now — two commits on `main`, nothing pushed yet.
+The user wants a **private** repo in his personal GitHub account (`remo01de`); `gh` is not installed
+on this machine, so he creates the empty repo and hands over the URL, then `git remote add origin`
++ `git push -u origin main`. `.env` and `data/*.db` are gitignored and must stay that way — `.env`
+holds the live Perplexity key.
+
 **Login requires setup before the server will start.** `assertAuthConfigured()` throws on boot if
 `AUTH_PASSWORD_HASH` or `SESSION_SECRET` is missing from `.env` — deliberately, so a
 misconfiguration surfaces at startup rather than as a login that rejects everyone. Generate both
