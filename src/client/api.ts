@@ -89,6 +89,16 @@ export function fetchFieldCompanies(lat: number, lon: number, radiusKm: number):
   return fetch(`/api/companies?${params}`).then((r) => handle<Company[]>(r));
 }
 
+/**
+ * Alle sichtbaren Leads ohne Umkreisfilter, nach Fachlichkeit x Potenzial
+ * sortiert. Rueckfallebene, wenn der Standort nicht verfuegbar ist (Rechte
+ * verweigert, Tiefgarage, Geraet ohne GPS) -- ohne sie waere die Feldansicht
+ * dann komplett leer.
+ */
+export function fetchCompaniesWithoutLocation(): Promise<Company[]> {
+  return fetch("/api/companies").then((r) => handle<Company[]>(r));
+}
+
 export function updateCompanyStatus(id: number, status: LeadStatus): Promise<Company> {
   return fetch(`/api/companies/${id}/status`, {
     method: "PATCH",

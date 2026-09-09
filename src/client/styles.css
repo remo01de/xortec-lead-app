@@ -193,6 +193,17 @@ header.app-header button.logout {
   color: var(--text-dim);
 }
 
+button.retry-location {
+  display: block;
+  margin-top: 0.6rem;
+  padding: 0.5rem 0.9rem;
+  border-radius: 6px;
+  border: 1px solid var(--warn-border);
+  background: transparent;
+  color: var(--text);
+  font-size: 0.9rem;
+}
+
 .login-wrap {
   max-width: 22rem;
   margin: 4rem auto;

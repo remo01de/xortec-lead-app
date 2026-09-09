@@ -169,8 +169,11 @@ Two non-obvious points:
   status), which is the proper fix. The nightly cron is unaffected: it runs in-process, with no
   proxy in the path.
 
-The container binds to `127.0.0.1:3000` only — TLS, the subdomain and the certificate belong to the
-reverse proxy in front of it, so the API key never sits on an open port (spec Q8).
+Published port is `${BIND_ADDR:-127.0.0.1}:${HOST_PORT:-9081}:3000` — the container still listens on
+3000 internally. Default binding is localhost only: TLS, the subdomain and the certificate belong to
+the reverse proxy in front of it, so the API key never sits on an open port (spec Q8). Setting
+`BIND_ADDR=0.0.0.0` in `.env` exposes it to the whole LAN, protected only by the login — that is a
+demo affordance (showing the app on a phone), not a production setting.
 
 ## What this app is
 
@@ -206,7 +209,11 @@ boundary when implementing.
 3. **Feldnutzung** (frequent, free, fast) — pure DB reads, no API calls, must work on poor network.
    Browser geolocation + selectable radius. If the radius search finds nothing, the app offers to
    trigger a Recherche run **with visible duration/cost warning** — this warning text is a hard
-   requirement (spec §2), not optional UX polish.
+   requirement (spec §2), not optional UX polish. **When geolocation fails** (permission denied,
+   underground car park, no GPS) the view falls back to the whole territory sorted by score
+   (`fetchCompaniesWithoutLocation()` → the API's no-coordinates branch) with a banner and a retry
+   button, rather than showing an error and nothing else. Added 2026-09-09 after the demo build
+   surfaced that a denied permission left the salesperson with an empty screen.
 
 **Consequence that must appear as UI text**: the DB must run ahead of the salesperson's location.
 An area never researched by the cron is empty during the day. This caveat belongs visibly in the

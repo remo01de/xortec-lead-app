@@ -1,4 +1,10 @@
-import { fetchFieldCompanies, updateCompanyStatus, type Company, type LeadStatus } from "../api.js";
+import {
+  fetchCompaniesWithoutLocation,
+  fetchFieldCompanies,
+  updateCompanyStatus,
+  type Company,
+  type LeadStatus,
+} from "../api.js";
 
 const STATUS_LABELS: Record<LeadStatus, string> = {
   neu: "Neu",
@@ -61,7 +67,7 @@ export function renderFieldView(container: HTMLElement): void {
 
   async function load(): Promise<void> {
     if (!navigator.geolocation) {
-      resultsEl.innerHTML = `<p class="empty-state">Geolocation wird von diesem Browser nicht unterstützt.</p>`;
+      await loadWithoutLocation("Dieser Browser unterstützt keine Standortbestimmung.");
       return;
     }
     resultsEl.innerHTML = `<p class="empty-state">Standort wird ermittelt…</p>`;
@@ -76,10 +82,34 @@ export function renderFieldView(container: HTMLElement): void {
         }
       },
       (err) => {
-        resultsEl.innerHTML = `<p class="empty-state">Standort nicht verfügbar: ${escapeHtml(err.message)}</p>`;
+        // Kein Standort heisst nicht "keine Leads": ohne Rueckfallebene waere die
+        // Ansicht in der Tiefgarage oder bei verweigerter Freigabe komplett leer.
+        void loadWithoutLocation(err.message);
       },
       { enableHighAccuracy: true, timeout: 10_000 }
     );
+  }
+
+  /** Alle Leads nach Bewertung sortiert, wenn keine Entfernung berechenbar ist. */
+  async function loadWithoutLocation(grund: string): Promise<void> {
+    resultsEl.innerHTML = `<p class="empty-state">Lade Leads ohne Standort…</p>`;
+    try {
+      const companies = await fetchCompaniesWithoutLocation();
+      const hinweis = `
+        <div class="warning-box">
+          <strong>Ohne Standort.</strong> ${escapeHtml(grund)}<br />
+          Angezeigt werden alle Leads des Vertriebsgebiets, sortiert nach Bewertung
+          statt nach Entfernung.
+          <button class="retry-location" type="button">Mit Standort erneut versuchen</button>
+        </div>
+      `;
+      resultsEl.innerHTML =
+        companies.length === 0
+          ? hinweis + `<p class="empty-state">Noch keine Leads in der Datenbank.</p>`
+          : hinweis + companies.map(renderCompanyCard).join("");
+    } catch (err) {
+      resultsEl.innerHTML = `<p class="empty-state">Fehler beim Laden: ${escapeHtml(String(err))}</p>`;
+    }
   }
 
   function renderResults(companies: Company[], radiusKm: number): void {
@@ -96,6 +126,10 @@ export function renderFieldView(container: HTMLElement): void {
     }
     resultsEl.innerHTML = companies.map(renderCompanyCard).join("");
   }
+
+  resultsEl.addEventListener("click", (e) => {
+    if ((e.target as HTMLElement).classList.contains("retry-location")) void load();
+  });
 
   resultsEl.addEventListener("change", async (e) => {
     const select = e.target as HTMLSelectElement;

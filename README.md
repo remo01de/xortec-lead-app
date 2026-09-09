@@ -24,7 +24,9 @@ nicht voneinander ab:
    (gedrosselt und dauerhaft gecacht, mit PLZ-Mittelpunkt als Rückfallebene), alle Quell-URLs per
    HTTP geprüft (dabei fliegen erfundene Links auf) und die drei Bewertungen berechnet.
 3. **Feldnutzung** (oft, kostenlos, schnell) — reine Datenbankabfrage per Umkreissuche, ohne einen
-   einzigen API-Aufruf. Funktioniert auch bei schlechtem Netz.
+   einzigen API-Aufruf. Funktioniert auch bei schlechtem Netz. Ist kein Standort verfügbar — Rechte
+   verweigert, Tiefgarage, Gerät ohne GPS — zeigt die App statt einer Fehlermeldung alle Leads des
+   Gebiets nach Bewertung sortiert, mit Hinweis und Schaltfläche zum erneuten Versuch.
 
 Bewertet wird **in der App, nicht vom Sprachmodell**: Fachlichkeit, Potenzial und Datenqualität
 werden deterministisch nach festen Punkteregeln gerechnet. Das Modell liefert ausschließlich Fakten
@@ -97,8 +99,13 @@ Typecheck deckt das Browser-Ziel des Bundlers nicht ab.
 docker compose up -d --build
 ```
 
-Der Container lauscht nur auf `127.0.0.1:3000`; TLS, Subdomain und Zertifikat übernimmt ein
-Reverse Proxy davor, damit der API-Key nie an einem offenen Port hängt.
+Die App läuft dann auf **Port 9081** (`HOST_PORT`), im Container weiterhin auf 3000. Veröffentlicht
+wird standardmäßig nur auf `127.0.0.1` — TLS, Subdomain und Zertifikat übernimmt ein Reverse Proxy
+davor, damit der API-Key nie an einem offenen Port hängt.
+
+Für eine Vorführung im WLAN, etwa auf dem Handy, in `.env` zusätzlich `BIND_ADDR=0.0.0.0` setzen.
+Die App ist dann für jeden im selben Netz erreichbar und nur durch das Login geschützt — im
+Produktivbetrieb hinter dem Proxy also wieder auf `127.0.0.1` zurückstellen.
 
 Zwei Punkte, die nicht offensichtlich sind:
 

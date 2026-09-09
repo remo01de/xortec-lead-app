@@ -2,10 +2,13 @@ services:
   app:
     build: .
     restart: unless-stopped
-    # Nur lokal gebunden: TLS und Subdomain macht der Reverse Proxy davor,
-    # der API-Key soll nie an einem offenen Port haengen (spec Q8).
+    # Standard: nur lokal erreichbar. TLS und Subdomain macht der Reverse Proxy
+    # davor, der API-Key soll nie an einem offenen Port haengen (spec Q8).
+    # Fuer eine Demo im WLAN (Handy/Tablet) in .env BIND_ADDR=0.0.0.0 setzen --
+    # dann ist die App fuer jeden im Netz erreichbar, geschuetzt nur durch das
+    # Login. In Produktion BIND_ADDR nicht setzen.
     ports:
-      - "127.0.0.1:3000:3000"
+      - "${BIND_ADDR:-127.0.0.1}:${HOST_PORT:-9081}:3000"
     env_file:
       - .env
     environment:
