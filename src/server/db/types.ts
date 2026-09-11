@@ -28,6 +28,8 @@ export interface CompanyRow {
   verification_status: VerificationStatus;
   status: LeadStatus;
   note: string | null;
+  sales_feedback: 'good_fit' | 'poor_fit' | 'uncertain' | null;
+  feedback_note: string | null;
   first_seen_run_id: number | null;
   last_updated: string;
 }

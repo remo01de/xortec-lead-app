@@ -2,16 +2,19 @@ import { fetchSession, logout } from "./api.js";
 import { renderFieldView } from "./views/field-list.js";
 import { renderLoginView } from "./views/login.js";
 import { renderResearchView } from "./views/research.js";
+import { renderDataView } from "./views/data.js";
 
-type Tab = "field" | "research";
+type Tab = "field" | "research" | "data";
 
 const app = document.getElementById("app")!;
+let disposeView: (() => void) | undefined;
 
 function renderApp(): void {
   app.innerHTML = `
     <header class="app-header">
       <button data-tab="field" class="active">Feld</button>
       <button data-tab="research">Recherche</button>
+      <button data-tab="data">Daten</button>
       <button id="logout" class="logout">Abmelden</button>
     </header>
     <main id="main"></main>
@@ -21,8 +24,11 @@ function renderApp(): void {
   const tabButtons = app.querySelectorAll<HTMLButtonElement>("[data-tab]");
 
   function showTab(tab: Tab): void {
+    disposeView?.();
+    disposeView = undefined;
     tabButtons.forEach((btn) => btn.classList.toggle("active", btn.dataset.tab === tab));
-    if (tab === "field") renderFieldView(mainEl);
+    if (tab === "field") disposeView = renderFieldView(mainEl);
+    else if (tab === 'data') renderDataView(mainEl);
     else renderResearchView(mainEl);
   }
 
@@ -39,6 +45,9 @@ function renderApp(): void {
 }
 
 function showLogin(): void {
+  disposeView?.();
+  disposeView = undefined;
+  document.querySelectorAll('dialog').forEach(dialog => dialog.remove());
   renderLoginView(app, renderApp);
 }
 
@@ -50,6 +59,7 @@ window.addEventListener("unhandledrejection", (event) => {
     showLogin();
   }
 });
+window.addEventListener('session-expired', showLogin);
 
 // Kein Top-Level-await: das Browser-Target des Vite-Builds (chrome87/safari14)
 // unterstuetzt es nicht, waehrend tsc mit ES2022 es durchwinkt -- der

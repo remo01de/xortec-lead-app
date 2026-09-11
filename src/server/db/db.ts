@@ -1,4 +1,5 @@
-import { DatabaseSync } from "node:sqlite";
+import type { DatabaseSync } from "node:sqlite";
+import { createRequire } from 'node:module';
 import { mkdirSync } from "node:fs";
 import { dirname } from "node:path";
 import { config } from "../config.js";
@@ -8,13 +9,14 @@ import { config } from "../config.js";
 // Docker-Image muss Node >=22.5 (siehe package.json engines) verwenden.
 
 let instance: DatabaseSync | undefined;
+const { DatabaseSync: Database } = createRequire(import.meta.url)('node:sqlite') as { DatabaseSync: new (path: string) => DatabaseSync };
 
 export function getDb(): DatabaseSync {
   if (!instance) {
     if (config.databasePath !== ":memory:") {
       mkdirSync(dirname(config.databasePath), { recursive: true });
     }
-    instance = new DatabaseSync(config.databasePath);
+    instance = new Database(config.databasePath);
     instance.exec("PRAGMA journal_mode = WAL");
     instance.exec("PRAGMA foreign_keys = ON");
   }

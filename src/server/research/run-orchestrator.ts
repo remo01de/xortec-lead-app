@@ -4,6 +4,8 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { config } from "../config.js";
 import { findCompanyByDomain, insertCompany, listAllDomains, updateCompanyEnrichment } from "../db/companies.repo.js";
+import { isKnownCustomer, readCustomers } from "../db/customers.repo.js";
+import { matchIdentity, type Identity } from "./identity.js";
 import { insertEvidence } from "../db/evidence.repo.js";
 import { createRun, updateRunStats } from "../db/runs.repo.js";
 import { insertSources, markSourceHttpChecked } from "../db/sources.repo.js";
@@ -184,6 +186,7 @@ export async function runResearch(
   );
 
   const knownDomains = listAllDomains(db);
+  for (const customer of readCustomers(db)) if (customer.domain) knownDomains.add(customer.domain);
   const seenDomains = new Set<string>();
   const toQualify: FinderCandidate[] = [];
   for (const candidate of finderResult.data.candidates) {
@@ -205,6 +208,7 @@ export async function runResearch(
 
     const preDomain = candidate.website ? normalizeDomain(candidate.website) : null;
     if (preDomain && findCompanyByDomain(db, preDomain)) continue;
+    if (isKnownCustomer(db, { company_name: candidate.company_name, domain: preDomain })) continue;
 
     let qualification;
     try {
@@ -249,6 +253,13 @@ export async function runResearch(
       continue;
     }
     if (findCompanyByDomain(db, resolvedDomain)) continue;
+    const identity = { ...data, domain: resolvedDomain };
+    if (isKnownCustomer(db, identity)) continue;
+    const existingCompanies = db.prepare('SELECT company_name, domain, street, postal_code, city FROM companies').all() as unknown as Identity[];
+    if (existingCompanies.some(c => matchIdentity(identity, c)?.certain)) {
+      console.log(`[run ${runId}] Dublette über Firmenname/Adresse: ${data.company_name}`);
+      continue;
+    }
 
     const companyId = insertCompany(db, {
       domain: resolvedDomain,

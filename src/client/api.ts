@@ -20,6 +20,14 @@ export interface Company {
   verificationStatus: string;
   status: LeadStatus;
   note: string | null;
+  geocodeSource: 'nominatim' | 'plz_centroid' | 'none' | null;
+  services: string[];
+  targetSegments: string[];
+  certifications: string[];
+  manufacturerMentions: { manufacturer: string; relationship: string }[];
+  salesFeedback: 'good_fit' | 'poor_fit' | 'uncertain' | null;
+  feedbackNote: string | null;
+  lastUpdated: string;
   distanceKm?: number;
 }
 
@@ -54,7 +62,10 @@ export class UnauthorizedError extends Error {
 }
 
 async function handle<T>(res: Response): Promise<T> {
-  if (res.status === 401) throw new UnauthorizedError();
+  if (res.status === 401) {
+    window.dispatchEvent(new Event('session-expired'));
+    throw new UnauthorizedError();
+  }
   if (!res.ok) {
     const body = await res.json().catch(() => ({}));
     throw new Error(body.error ?? `API-Fehler ${res.status}`);
@@ -99,12 +110,28 @@ export function fetchCompaniesWithoutLocation(): Promise<Company[]> {
   return fetch("/api/companies").then((r) => handle<Company[]>(r));
 }
 
-export function updateCompanyStatus(id: number, status: LeadStatus): Promise<Company> {
+export function updateCompanyStatus(id: number, status: LeadStatus, note?: string | null): Promise<Company> {
   return fetch(`/api/companies/${id}/status`, {
     method: "PATCH",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ status }),
+    body: JSON.stringify({ status, note }),
   }).then((r) => handle<Company>(r));
+}
+
+export function request<T>(path: string, body?: unknown, method = 'POST'): Promise<T> {
+  return fetch(path, body === undefined ? undefined : { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }).then(r => handle<T>(r));
+}
+
+export interface CompanyDetail extends Company {
+  sources: { id: number; url: string; title: string | null; evidence: string | null; http_ok: number | null; checked_at: string | null }[];
+  evidence: string[];
+  duplicates: { id: number; companyName: string; domain: string; address: string; certain: boolean; reason: string }[];
+}
+
+export interface ImportPreview {
+  token: string;
+  rows: { row: number; customer: { company_name: string; domain: string | null }; error: string | null;
+    matches: { id: number; companyName: string; domain: string; address: string; status: string; certain: boolean; reason: string }[] }[];
 }
 
 export function triggerResearchRun(areaCode: string): Promise<RunResult> {

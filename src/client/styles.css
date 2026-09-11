@@ -38,7 +38,7 @@ header.app-header {
   top: 0;
   background: var(--bg);
   border-bottom: 1px solid var(--surface-2);
-  z-index: 10;
+  z-index: 1100;
 }
 
 header.app-header button {
@@ -77,6 +77,49 @@ main {
   background: var(--surface);
   color: var(--text);
   font-size: 1rem;
+}
+
+.map-section {
+  margin-bottom: 1rem;
+}
+
+.company-map {
+  height: min(46vh, 360px);
+  min-height: 250px;
+  border: 1px solid var(--surface-2);
+  border-radius: 10px;
+  overflow: hidden;
+  background: var(--surface);
+}
+
+.map-marker {
+  display: block;
+  width: 18px;
+  height: 18px;
+  border: 3px solid white;
+  border-radius: 50% 50% 50% 0;
+  box-shadow: 0 1px 5px rgb(0 0 0 / 45%);
+  transform: rotate(-45deg);
+}
+
+.map-marker-user {
+  width: 20px;
+  height: 20px;
+  background: var(--accent);
+}
+
+.map-marker-prio-A { background: var(--prio-a); }
+.map-marker-prio-B { background: var(--prio-b); }
+.map-marker-prio-C { background: var(--prio-c); }
+
+.company-popup {
+  color: #1e293b;
+  line-height: 1.4;
+}
+
+.company-popup strong {
+  display: block;
+  margin-bottom: 0.2rem;
 }
 
 .warning-box {
@@ -145,6 +188,7 @@ main {
 
 .scores {
   display: flex;
+  flex-wrap: wrap;
   gap: 0.75rem;
   font-size: 0.8rem;
   color: var(--text-dim);
@@ -244,3 +288,32 @@ button.retry-location {
   border: 1px solid var(--warn-border);
   font-size: 0.9rem;
 }
+
+a { color: #91b9ff; }
+button, select { cursor: pointer; }
+button:disabled { cursor: wait; opacity: 0.6; }
+button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+.detail-link { padding: 0.2rem 0; border: 0; background: transparent; color: inherit; text-align: left; font: inherit; font-weight: 650; text-decoration: underline; text-underline-offset: 3px; }
+.company-actions { margin-top: 0.7rem; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+.map-cluster { display: grid; place-items: center; border: 3px solid white; border-radius: 50%; background: #2456a8; color: white; font-size: 14px; font-weight: 750; box-shadow: 0 2px 6px #0006; }
+.cluster-popup { max-height: 280px; overflow-y: auto; min-width: 200px; }
+.cluster-popup .company-popup { border-top: 1px solid #ccd4df; padding: 0.6rem 0; }
+.company-detail { width: min(700px, calc(100vw - 1.5rem)); max-height: 90dvh; padding: 1.2rem; border: 1px solid var(--surface-2); border-radius: 12px; color: var(--text); background: var(--bg); overflow-y: auto; }
+.company-detail::backdrop { background: #000a; }
+.close-detail { position: sticky; top: 0; float: right; z-index: 1; }
+.company-detail h2 { clear: both; padding-top: 0.5rem; }
+.company-detail h3 { margin-top: 1.5rem; }
+.source-card { background: var(--surface); border: 1px solid var(--surface-2); border-radius: 8px; margin: 0.6rem 0; padding: 0.85rem; overflow-wrap: anywhere; }
+.source-card small { color: var(--text-dim); }
+.company-detail form, #import-form { display: grid; gap: 0.8rem; margin-block: 1rem; }
+.company-detail label, #import-form label { display: grid; gap: 0.4rem; }
+.company-detail input, .company-detail textarea, .company-detail select, #import-form input, #import-form select { width: 100%; min-width: 0; border: 1px solid var(--surface-2); border-radius: 6px; padding: 0.65rem; color: var(--text); background: var(--surface); font: inherit; }
+textarea { min-height: 90px; resize: vertical; }
+.data-section { border-top: 1px solid var(--surface-2); margin-top: 1.2rem; padding-top: 0.5rem; line-height: 1.55; overflow-wrap: anywhere; }
+.data-section button:not(.primary), .close-detail { border: 1px solid var(--surface-2); border-radius: 6px; padding: 0.5rem 0.65rem; background: var(--surface-2); color: var(--text); font: inherit; }
+.match-option { display: flex; gap: 0.65rem; align-items: flex-start; padding-block: 0.5rem; }
+.match-option input { width: 20px; height: 20px; flex-shrink: 0; }
+.import-rows { max-height: 480px; overflow: auto; }
+.error-text { color: #ffabab; }
+@media (max-width: 420px) { header.app-header { gap: 0.25rem; padding: 0.5rem; } header.app-header button { padding: 0.7rem 0.4rem; font-size: 0.9rem; } }

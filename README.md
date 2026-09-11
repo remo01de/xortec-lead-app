@@ -11,6 +11,10 @@ Gebiet.
 
 Im Abnahmetest über das Hamburger Gebiet lieferte ein Lauf 30 brauchbare Leads aus 31 Kandidaten.
 
+Der aktuelle Docker-Stand ist lokal verifiziert: V2-Image gebaut, Container neu erstellt,
+Migration `003_v2.sql` angewendet und `/api/health` meldet HTTP 200. Das bestehende SQLite-Volume
+bleibt dabei erhalten.
+
 ## Wie es funktioniert
 
 Drei bewusst entkoppelte Ebenen — die teure Recherche und die schnelle Nutzung im Feld hängen
@@ -34,6 +38,21 @@ und Belege.
 
 > **Die Datenbank muss dem Vertriebsgebiet vorauslaufen.** Ein Gebiet, das nachts nie recherchiert
 > wurde, ist tagsüber im Feld leer. Das ist kein Fehler der App.
+
+## V2-Erweiterungen
+
+Die Feldansicht bietet eine Karte mit Pin-Gruppen, Filtern nach Priorität und Status
+sowie Navigation zur Firmenadresse. Ein Klick auf den Firmennamen öffnet Quellen,
+Belege, Herstellerbindungen, Notizen und Vertriebsfeedback.
+
+Im neuen Tab **Daten** lassen sich Bestandskunden per CSV mit Vorschau abgleichen
+und der gesamte Firmenbestand exportieren. Die Feldansicht exportiert die aktuelle
+Auswahl. CSV-Dateien sind für den Import in Excel vorbereitet.
+
+Die Score-Regeln bleiben bis zum Vorliegen belastbarer Praxiserfahrung unverändert;
+Feedback pro Firma und Export bereiten die spätere Kalibrierung vor. Die Praxisbewertungen
+werden als „passt“, „passt nicht“ oder „noch unklar“ mit Begründung gespeichert.
+Details, CSV-Spalten und Grenzen stehen in [`docs/v2.md`](docs/v2.md).
 
 ## Voraussetzungen
 
@@ -84,10 +103,13 @@ Der erste startet die API auf Port 3000, der zweite das Frontend auf Port 5173 u
 dorthin weiter. Zum Anschauen der Oberfläche also **Port 5173** öffnen.
 
 Migrationen laufen beim Serverstart automatisch; `npm run migrate` gibt es zusätzlich einzeln.
+Migration `003_v2.sql` ergänzt Kundenliste und Vertriebsfeedback, ohne bestehende Firmendaten,
+Quellen, Belege oder Notizen zu löschen.
 
 ```bash
 npm test          # Unit-Tests
 npm run typecheck # TypeScript fuer Server und Client
+npm run build     # Server- und Browser-Build
 ```
 
 Nach Änderungen an den Client-Einstiegspunkten zusätzlich `npm run build:client` ausführen — der
@@ -102,6 +124,16 @@ docker compose up -d --build
 Die App läuft dann auf **Port 9081** (`HOST_PORT`), im Container weiterhin auf 3000. Veröffentlicht
 wird standardmäßig nur auf `127.0.0.1` — TLS, Subdomain und Zertifikat übernimmt ein Reverse Proxy
 davor, damit der API-Key nie an einem offenen Port hängt.
+
+Nach einem Update prüfen:
+
+```bash
+docker compose ps
+Invoke-WebRequest -UseBasicParsing http://127.0.0.1:9081/api/health
+```
+
+Erwartet werden ein Containerstatus `healthy` und `{"ok":true}`. Das Volume `leaddata` darf bei
+Updates nicht entfernt werden.
 
 Für eine Vorführung im WLAN, etwa auf dem Handy, in `.env` zusätzlich `BIND_ADDR=0.0.0.0` setzen.
 Die App ist dann für jeden im selben Netz erreichbar und nur durch das Login geschützt — im
@@ -151,3 +183,5 @@ umsortiert werden.
   scheitern sonst still.
 - [`CLAUDE.md`](CLAUDE.md) — Arbeitsanleitung für Claude Code, inklusive der Testlauf-Historie und
   offener Punkte.
+- [`AGENT.md`](AGENT.md) — aktueller Arbeitsstand und Regeln für weitere Änderungen.
+- [`docs/v2.md`](docs/v2.md) — CSV-Import, Export, Dubletten, Firmendetails, Karte und Feedback.

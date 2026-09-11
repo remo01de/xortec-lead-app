@@ -25,6 +25,8 @@ export function serializeCompany(row: CompanyRow, distanceKm?: number) {
     verificationStatus: row.verification_status,
     status: row.status,
     note: row.note,
+    salesFeedback: row.sales_feedback,
+    feedbackNote: row.feedback_note,
     lastUpdated: row.last_updated,
     ...(distanceKm !== undefined ? { distanceKm: Math.round(distanceKm * 10) / 10 } : {}),
   };

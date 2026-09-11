@@ -10,13 +10,15 @@ export function normalizeDomain(urlOrDomain: string): string | null {
   const withProtocol = /^[a-z]+:\/\//i.test(trimmed) ? trimmed : `https://${trimmed}`;
   let host: string;
   try {
-    host = new URL(withProtocol).hostname.toLowerCase();
+    const parsed = new URL(withProtocol);
+    if (!['http:', 'https:'].includes(parsed.protocol) || parsed.username || parsed.password) return null;
+    host = parsed.hostname.toLowerCase().replace(/\.$/, '');
   } catch {
     return null;
   }
 
   if (host.startsWith("www.")) host = host.slice(4);
-  if (!host.includes(".")) return null;
+  if (!host.includes(".") || !/^[a-z0-9-]+(?:\.[a-z0-9-]+)+$/.test(host)) return null;
 
   return host;
 }

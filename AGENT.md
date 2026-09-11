@@ -1,33 +1,37 @@
-# CLAUDE.md
+# AGENT.md
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 ## Project state
 
-**V2 (2026-09-10):** user authorized CSV customer matching, CSV export, company details,
-name/address deduplication and map clustering/filters/navigation. See `docs/v2.md` for the
-implemented contract; this supersedes the v1-only exclusions below. The user explicitly says
-sales experience is still missing: keep scoring rules unchanged and collect per-company
-feedback (`sales_feedback`, `feedback_note`) for later calibration. Migration 003 adds these
-fields and a durable `customers` list. Import uses a read-only preview and an explicit commit;
-never merge weak name matches automatically. `tests/v2*.test.ts` cover the new APIs and
-research exclusions with isolated SQLite databases and mocked research/enrichment calls.
-Deployment and real customer imports have not been performed as part of this implementation.
+**Current state (2026-09-11): V2 is implemented and running in Docker locally.** The V2 image was
+rebuilt, the container was recreated with the existing `leaddata` volume, migration `003_v2.sql`
+applied successfully, and `/api/health` returned HTTP 200. Do not remove the volume during
+updates. The default local endpoint is `127.0.0.1:9081`; the nightly cron remains disabled unless
+`CRON_ENABLED=true` is set.
+
+V2 includes CSV customer import with preview and idempotent storage, customer exclusion before
+paid qualification, name/address duplicate hints, CSV export, company details with sources,
+evidence and manufacturer relationships, map clustering, priority/status filters, navigation
+links, and per-company sales feedback. The scoring rules remain unchanged because the user
+confirmed that practical sales experience is not available yet. Feedback values are `good_fit`,
+`poor_fit`, and `uncertain`, with a free-text reason for later calibration.
+
+Verification after V2: `npm test` passes 66 tests across 10 files, `npm run typecheck` passes for
+server and client, `npm run build` passes, and the browser upload flow was tested against an
+isolated database: two valid customer rows imported, one lead matched, one malformed row skipped,
+and a repeat import added zero duplicates. The production database was not used for that test.
+
+Read `docs/v2.md` before changing import, export, duplicate matching, detail view, map, or
+feedback behavior. `README.md` contains the user-facing setup and Docker instructions.
 
 Vertical slice implemented (2026-09-07): Node.js/TypeScript, DB schema + migrations, deterministic
 scoring engine, Perplexity Agent API client (finder + Stufe-2 calls), Nominatim geocoding,
 HTTP-check, run orchestrator, REST API, minimal PWA frontend (field list + research view).
 **Acceptance test cleared (2026-09-08)**: the user reviewed run #8's 30 leads and accepted them
-("Die Liste ist perfekt"), so spec §7's governance gate is open. **The v1 scope from spec §7 is now
-code-complete**: login, nightly cron, and the Docker setup are all built and verified. What remains
-is the deployment itself on the user's IONOS server (his own access, and he has done it before) —
-plus the two follow-ups under Known open risks.
-
-**Git state (2026-09-08)**: the repo has history now — two commits on `main`, nothing pushed yet.
-The user wants a **private** repo in his personal GitHub account (`remo01de`); `gh` is not installed
-on this machine, so he creates the empty repo and hands over the URL, then `git remote add origin`
-+ `git push -u origin main`. `.env` and `data/*.db` are gitignored and must stay that way — `.env`
-holds the live Perplexity key.
+("Die Liste ist perfekt"), so spec §7's governance gate is open. The v1 scope is complete and V2
+is implemented and locally deployed in Docker. Deployment to the user's IONOS server remains an
+external handoff; it has not been performed from this workspace.
 
 **Login requires setup before the server will start.** `assertAuthConfigured()` throws on boot if
 `AUTH_PASSWORD_HASH` or `SESSION_SECRET` is missing from `.env` — deliberately, so a
@@ -128,7 +132,7 @@ Run a single test file: `npx vitest run tests/scoring.test.ts`. Vitest has its o
 breaks silently (this already happened once: `vite.config.ts` sets `root: "src/client"`, which
 Vitest inherited and then found no tests).
 
-**What the test suite does and does not cover**: the 53 tests cover pure functions (`scoring`,
+**What the test suite does and does not cover**: the 66 tests cover pure functions (`scoring`,
 `dedupe`, `geo`, `size-heuristics`, `plz-centroid`, `geofilter`, `password`) plus the cron's area
 rotation against an in-memory DB (`area-schedule`). There are **no** tests for
 `run-orchestrator.ts`, `perplexity.client.ts`, the API routes, or the repos — a green `npm test`
@@ -160,11 +164,12 @@ Build Tools. This avoids native compilation entirely (works identically in Docke
 depending on an experimental Node API; re-evaluate if `node:sqlite` changes incompatibly upstream.
 Requires Node ≥22.5 (see `package.json` `engines`) — the Docker base image must match.
 
-## Deployment (Docker, verified 2026-09-08)
+## Deployment (Docker, verified 2026-09-11)
 
 `Dockerfile` (multi-stage, `node:24-slim`, runs as the non-root `node` user) and
 `docker-compose.yml`. Verified locally end to end: image builds, migrations run, login works,
-`/api/health` healthcheck reports healthy, data survives recreating the container.
+`/api/health` healthcheck reports healthy, data survives recreating the container, and migration
+`003_v2.sql` applies successfully.
 
 Two non-obvious points:
 
@@ -179,11 +184,8 @@ Two non-obvious points:
   status), which is the proper fix. The nightly cron is unaffected: it runs in-process, with no
   proxy in the path.
 
-Published port is `${BIND_ADDR:-127.0.0.1}:${HOST_PORT:-9081}:3000` — the container still listens on
-3000 internally. Default binding is localhost only: TLS, the subdomain and the certificate belong to
-the reverse proxy in front of it, so the API key never sits on an open port (spec Q8). Setting
-`BIND_ADDR=0.0.0.0` in `.env` exposes it to the whole LAN, protected only by the login — that is a
-demo affordance (showing the app on a phone), not a production setting.
+The container binds to `127.0.0.1:3000` only — TLS, the subdomain and the certificate belong to the
+reverse proxy in front of it, so the API key never sits on an open port (spec Q8).
 
 ## What this app is
 
@@ -219,11 +221,7 @@ boundary when implementing.
 3. **Feldnutzung** (frequent, free, fast) — pure DB reads, no API calls, must work on poor network.
    Browser geolocation + selectable radius. If the radius search finds nothing, the app offers to
    trigger a Recherche run **with visible duration/cost warning** — this warning text is a hard
-   requirement (spec §2), not optional UX polish. **When geolocation fails** (permission denied,
-   underground car park, no GPS) the view falls back to the whole territory sorted by score
-   (`fetchCompaniesWithoutLocation()` → the API's no-coordinates branch) with a banner and a retry
-   button, rather than showing an error and nothing else. Added 2026-09-09 after the demo build
-   surfaced that a denied permission left the salesperson with an empty screen.
+   requirement (spec §2), not optional UX polish.
 
 **Consequence that must appear as UI text**: the DB must run ahead of the salesperson's location.
 An area never researched by the cron is empty during the day. This caveat belongs visibly in the
@@ -288,9 +286,8 @@ Recherche view.
   weak evidence (mark `unverified`, hide in field view).
 - No personal contact data — company data and role-based contacts only. **No email button in the
   UI** (Q20).
-- No CSV import/customer-list matching in v1; the `bestandskunde` status is meant to grow the
-  exclusion list organically through use (Q16). CSV import is prepared for, not wired up.
-- No map view, export, or Salesforce integration in v1 (spec §7).
+- CSV import, customer-list matching, map view, export, company details, clustering and navigation
+  are implemented in V2. Salesforce integration remains out of scope.
 - API key stays server-side; daily rate limit enforced in code (Q8).
 - **Superseded with the user's explicit approval (2026-09-08)**: spec Q7 defines the Gebietseinheit
   as a two-digit PLZ prefix, and the hard geofilter (Q4) used to compare prefixes. It now compares

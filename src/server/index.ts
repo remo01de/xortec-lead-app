@@ -6,6 +6,7 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { registerAuthRoutes } from "./api/routes/auth.js";
 import { registerCompanyRoutes } from "./api/routes/companies.js";
+import { registerCustomerRoutes } from "./api/routes/customers.js";
 import { registerResearchRoutes } from "./api/routes/research.js";
 import { hasValidSession } from "./auth/session.js";
 import { assertAuthConfigured, config } from "./config.js";
@@ -43,6 +44,7 @@ app.addHook("onRequest", async (req, reply) => {
 
 registerAuthRoutes(app);
 registerCompanyRoutes(app);
+registerCustomerRoutes(app);
 registerResearchRoutes(app);
 
 app.get("/api/health", async () => ({ ok: true }));
